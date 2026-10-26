@@ -1,0 +1,13 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.git/
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+dataset/
+datasets/
+*.backup*
+app.py.backup*
