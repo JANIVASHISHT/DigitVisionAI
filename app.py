@@ -11,11 +11,11 @@ from PIL import Image
 
 
 # =========================================================
-# DIGITVISION AI — V.R PROGRAMMER
+# DIGITVISION AI — TEAM QUANTUM
 # =========================================================
 
 BASE_DIR = Path(__file__).resolve().parent
-MODEL_PATH = BASE_DIR / "models" / "training_runs" / "digitvision_emnist_candidate.keras"
+MODEL_PATH = BASE_DIR / "models" / "digitvision.keras"
 LOGO_PATH = BASE_DIR / "vr_programmer_favicon.png"
 
 SUPPORT_EMAIL = "vashishtvrjani@gmail.com"
@@ -32,8 +32,8 @@ def gmail_compose_url(subject_text, body_text):
     )
 
 st.set_page_config(
-    page_title="DigitVision AI | V.R PROGRAMMER",
-    page_icon=str(LOGO_PATH) if LOGO_PATH.exists() else "🔢",
+    page_title="DigitVision AI | TEAM QUANTUM",
+    page_icon=str(LOGO_PATH) if LOGO_PATH.exists() else "",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -304,7 +304,7 @@ if not st.session_state.get("startup_splash_done", False):
             <div class="dv-splash-title">
                 DigitVision <span class="gradient-text">AI</span>
             </div>
-            <div class="dv-splash-sub">A V.R PROGRAMMER project</div>
+            <div class="dv-splash-sub">A TEAM QUANTUM project</div>
             <div class="dv-loading-track"><div class="dv-loading-bar"></div></div>
             <div class="dv-loading-caption">Preparing your AI workspace · Please wait</div>
         </div>
@@ -349,9 +349,9 @@ with st.sidebar:
     if LOGO_PATH.exists():
         st.image(str(LOGO_PATH), width=115)
     else:
-        st.markdown("## 🔢")
+        st.markdown("## ")
 
-    st.markdown("### V.R PROGRAMMER")
+    st.markdown("### TEAM QUANTUM")
     st.markdown("**DigitVision AI**")
     st.caption("Handwritten digit recognition")
 
@@ -360,11 +360,11 @@ with st.sidebar:
 
     for page in PAGES:
         label = {
-            "Home": "🏠  Home",
-            "Recognize Digit": "🔍  Recognize Digit",
-            "How It Works": "⚙️  How It Works",
-            "About the Team": "👥  About the Team",
-            "Report a Bug": "🐞  Report a Bug",
+            "Home": "  Home",
+            "Recognize Digit": "  Recognize Digit",
+            "How It Works": "  How It Works",
+            "About the Team": "  About the Team",
+            "Report a Bug": "  Report a Bug",
         }[page]
 
         if st.button(
@@ -411,7 +411,7 @@ def load_model():
     if not MODEL_PATH.exists():
         raise FileNotFoundError(
             f"Model not found: {MODEL_PATH}\n"
-            "Check that the configured model file exists."
+            "Check that models/digitvision.keras exists."
         )
 
     return tf.keras.models.load_model(str(MODEL_PATH))
@@ -426,7 +426,7 @@ def get_model():
         st.error("The AI model could not be loaded.")
         st.code(str(exc))
         st.info(
-            "Check that the configured model file exists and "
+            "Check that models/digitvision.keras exists and "
             "that your virtual environment has TensorFlow installed."
         )
         return None
@@ -435,24 +435,6 @@ def get_model():
 # =========================================================
 # IMAGE PREPROCESSING
 # =========================================================
-
-def correct_shadow(gray):
-    """
-    Reduce broad, uneven lighting and shadows while preserving digit strokes.
-    Input and output are 8-bit grayscale images.
-    """
-    if gray.ndim != 2 or gray.dtype != np.uint8:
-        raise ValueError("correct_shadow expects an 8-bit grayscale image")
-
-    # Estimate slowly changing background illumination.
-    background = cv2.GaussianBlur(gray, (0, 0), sigmaX=21, sigmaY=21)
-
-    # Divide by the estimated illumination to reduce broad shadows.
-    background = np.maximum(background, 16).astype(np.float32)
-    corrected = gray.astype(np.float32) / background * 200.0
-
-    return np.clip(corrected, 0, 255).astype(np.uint8)
-
 
 def remove_notebook_lines(binary):
     """
@@ -612,7 +594,6 @@ def create_candidates(pil_image, ink_mode="Auto-detect"):
         add_candidate(otsu, "Otsu threshold original", False)
         add_candidate(remove_notebook_lines(otsu), "Otsu threshold line-cleaned", False)
 
-        # Keep the original adaptive candidates as a baseline.
         adaptive = cv2.adaptiveThreshold(
             enhanced, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
             cv2.THRESH_BINARY_INV, 31, 9
@@ -623,24 +604,6 @@ def create_candidates(pil_image, ink_mode="Auto-detect"):
             "Adaptive threshold line-cleaned",
             False,
         )
-
-        # Additional candidates after reducing uneven background shadows.
-        shadow_corrected = correct_shadow(gray)
-        shadow_enhanced = clahe.apply(shadow_corrected)
-
-        for block_size, offset in [(31, 7), (31, 11), (41, 9)]:
-            shadow_adaptive = cv2.adaptiveThreshold(
-                shadow_enhanced, 255,
-                cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-                cv2.THRESH_BINARY_INV, block_size, offset
-            )
-            label = f"Shadow-corrected adaptive {block_size}/{offset}"
-            add_candidate(shadow_adaptive, label, False)
-            add_candidate(
-                remove_notebook_lines(shadow_adaptive),
-                label + " line-cleaned",
-                False,
-            )
 
     return candidates
 
@@ -702,17 +665,7 @@ def metric_card(label, value, note):
     """, unsafe_allow_html=True)
 
 
-def show_footer():
-    st.divider()
-    st.markdown(
-        '<div style="text-align:center;color:#8494b3;font-size:12px;'
-        'line-height:1.9;">'
-        '<b>V.R PROGRAMMER</b> · DigitVision AI<br>'
-        '© 2026 V.R PROGRAMMER and the DigitVision AI project team. '
-        'All rights reserved to the respective creators.'
-        '</div>',
-        unsafe_allow_html=True,
-    )
+
 
 
 # =========================================================
@@ -756,7 +709,7 @@ if st.session_state.page == "Home":
         """, unsafe_allow_html=True)
 
         if st.button(
-            "🔍  Open Digit Recognizer",
+            "  Open Digit Recognizer",
             use_container_width=True,
             type="primary",
         ):
@@ -789,7 +742,7 @@ if st.session_state.page == "Home":
 elif st.session_state.page == "Recognize Digit":
     show_header()
 
-    st.markdown("### 🔍 Digit recognition studio")
+    st.markdown("###  Digit recognition studio")
     st.write(
         "Upload one handwritten digit. Auto-detect tries several "
         "preprocessing methods, which can help when a digit is written "
@@ -844,7 +797,7 @@ elif st.session_state.page == "Recognize Digit":
                     '<div style="padding:55px 15px;text-align:center;'
                     'border:1px dashed #465a7c;border-radius:15px;'
                     'color:#9aaccb;">'
-                    '<div style="font-size:42px;">🔢</div>'
+                    '<div style="font-size:42px;"></div>'
                     '<b>Your image preview will appear here</b><br>'
                     '<span class="small-note">Upload a digit to begin</span>'
                     '</div>',
@@ -854,7 +807,7 @@ elif st.session_state.page == "Recognize Digit":
 
         if uploaded_file is not None:
             if st.button(
-                "✨  Recognize Digit",
+                "  Recognize Digit",
                 use_container_width=True,
                 type="primary",
             ):
@@ -886,7 +839,7 @@ elif st.session_state.page == "Recognize Digit":
 
         if results:
             st.divider()
-            st.markdown("### 🎯 Recognition results")
+            st.markdown("###  Recognition results")
 
             # Let the user compare preprocessing results.
             option_names = [
@@ -968,21 +921,7 @@ elif st.session_state.page == "Recognize Digit":
                 )
                 st.markdown('</div>', unsafe_allow_html=True)
 
-            # Show agreement between preprocessing methods.
-            digit_counts = {
-                digit: sum(1 for r in results if r["digit"] == digit)
-                for digit in range(10)
-            }
-            vote_digit = max(digit_counts, key=digit_counts.get)
-            vote_count = digit_counts[vote_digit]
-
-            st.info(
-                f"🧠 Method agreement: {vote_count}/{len(results)} methods "
-                f"predict digit {vote_digit}. This indicates consistency, "
-                "not guaranteed correctness."
-            )
-
-            st.markdown("#### 🧪 Compare all preprocessing methods")
+            st.markdown("####  Compare all preprocessing methods")
 
             comparison = []
             for r in results:
@@ -1027,7 +966,7 @@ elif st.session_state.page == "Recognize Digit":
                     gmail_url = gmail_compose_url(subject_text, body_text)
 
                     st.link_button(
-                        "📧 Open Gmail in your browser",
+                        " Open Gmail in your browser",
                         gmail_url,
                         use_container_width=True,
                     )
@@ -1042,7 +981,7 @@ elif st.session_state.page == "Recognize Digit":
 elif st.session_state.page == "How It Works":
     show_header()
 
-    st.markdown("### ⚙️ How DigitVision AI works")
+    st.markdown("###  How DigitVision AI works")
     st.write(
         "The application turns an uploaded photo into a small image "
         "that a trained neural network can process."
@@ -1127,7 +1066,7 @@ elif st.session_state.page == "How It Works":
 elif st.session_state.page == "About the Team":
     show_header()
 
-    st.markdown("### 👥 About the project")
+    st.markdown("###  About the project")
     st.write(
         "DigitVision AI is a student project that explores computer vision, "
         "machine learning and a practical interface for handwritten-digit "
@@ -1138,7 +1077,7 @@ elif st.session_state.page == "About the Team":
     <div class="panel">
         <div class="section-tag">PROJECT IDENTITY</div>
         <h2>DigitVision AI</h2>
-        <p><b>Brand:</b> V.R PROGRAMMER</p>
+        <p><b>Brand:</b> TEAM QUANTUM</p>
         <p><b>Goal:</b> Recognize handwritten digits from uploaded images.</p>
         <p><b>Core technologies:</b> Python, OpenCV, TensorFlow/Keras and Streamlit.</p>
         <p><b>Current input:</b> One handwritten digit per image.</p>
@@ -1190,7 +1129,7 @@ elif st.session_state.page == "About the Team":
 elif st.session_state.page == "Report a Bug":
     show_header()
 
-    st.markdown("### 🐞 Report a bug or suggest an improvement")
+    st.markdown("### Report a bug or suggest an improvement")
     st.write(
         "Help improve DigitVision AI by reporting incorrect predictions, "
         "upload problems, display issues or other bugs."
@@ -1257,7 +1196,7 @@ elif st.session_state.page == "Report a Bug":
 
             st.success("Your report is ready to open in Gmail in your browser.")
             st.link_button(
-                "📧 Open Gmail in your browser",
+                " Open Gmail in your browser",
                 gmail_url,
                 use_container_width=True,
             )
@@ -1271,7 +1210,7 @@ elif st.session_state.page == "Report a Bug":
     st.markdown("""
     <div class="panel">
         <div class="section-tag">SUPPORT CONTACT</div>
-        <h3>V.R PROGRAMMER</h3>
+        <h3>TEAM QUANTUM</h3>
         <p>Bug reports and feedback</p>
         <p><b>vashishtvrjani@gmail.com</b></p>
     </div>
