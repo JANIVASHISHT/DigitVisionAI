@@ -645,20 +645,25 @@ def create_candidates(pil_image, ink_mode="Auto-detect"):
     return candidates
 
 
+
 def predict_candidates(model, candidates):
+    """Run all candidate images through the model in one batch."""
+    if not candidates:
+        return []
+
+    batch = np.stack(
+        [candidate["image"].astype(np.float32) / 255.0
+         for candidate in candidates],
+        axis=0,
+    )
+
+    if len(model.input_shape) == 4:
+        batch = batch[..., np.newaxis]
+
+    probabilities_batch = model(batch, training=False).numpy()
+
     results = []
-
-    for candidate in candidates:
-        image = candidate["image"].astype("float32") / 255.0
-        input_shape = model.input_shape
-
-        if len(input_shape) == 4:
-            image = image.reshape(1, 28, 28, 1)
-        else:
-            image = image.reshape(1, 28, 28)
-
-        probabilities = model.predict(image, verbose=0)[0]
-
+    for candidate, probabilities in zip(candidates, probabilities_batch):
         results.append({
             "name": candidate["name"],
             "image": candidate["image"],
@@ -667,15 +672,8 @@ def predict_candidates(model, candidates):
             "confidence": float(np.max(probabilities)),
         })
 
-    # Highest confidence is only a suggested candidate, not a guarantee.
     results.sort(key=lambda item: item["confidence"], reverse=True)
     return results
-
-
-# =========================================================
-# SHARED HEADER
-# =========================================================
-
 def show_header():
     st.markdown("""
     <div class="hero">
