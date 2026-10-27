@@ -15,7 +15,7 @@ from PIL import Image
 # =========================================================
 
 BASE_DIR = Path(__file__).resolve().parent
-MODEL_PATH = BASE_DIR / "models" / "digitvision.keras"
+MODEL_PATH = BASE_DIR / "models" / "digitvision_candidate.keras"
 LOGO_PATH = BASE_DIR / "vr_programmer_favicon.png"
 
 SUPPORT_EMAIL = "vashishtvrjani@gmail.com"
@@ -639,32 +639,46 @@ def predict_candidates(model, candidates):
 # SHARED HEADER
 # =========================================================
 
+# =========================================================
+# SHARED HEADER AND FOOTER
+# =========================================================
+
 def show_header():
-    st.markdown("""
-    <div class="hero">
-        <div class="section-tag">ARTIFICIAL INTELLIGENCE · COMPUTER VISION</div>
-        <div class="hero-title">
-            DigitVision <span class="gradient-text">AI</span>
+    st.markdown(
+        """
+        <div class="app-header">
+            <h1>DigitVision AI</h1>
+            <p>Handwritten Digit Recognition</p>
         </div>
-        <div class="hero-sub">
-            Turn handwritten numbers into digital predictions.
-            Upload a digit image, explore different preprocessing methods,
-            and see how a neural network interprets your handwriting.
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def show_footer():
+    st.markdown(
+        """
+        <div class="footer">
+            <p>Made with care by <strong>TEAM QUANTUM</strong></p>
+            <p>DigitVision AI | V.R PROGRAMMER</p>
+            <p>© 2026 All rights reserved.</p>
         </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 def metric_card(label, value, note):
-    st.markdown(f"""
-    <div class="metric">
-        <div class="metric-label">{label}</div>
-        <div class="metric-value">{value}</div>
-        <div class="small-note">{note}</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-
+    st.markdown(
+        f"""
+        <div class="metric">
+            <div class="metric-label">{label}</div>
+            <div class="metric-value">{value}</div>
+            <div class="small-note">{note}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 
 
